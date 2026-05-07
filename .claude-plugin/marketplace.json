@@ -1,0 +1,18 @@
+{
+  "name": "esp-pet-tools",
+  "owner": {
+    "name": "solarise"
+  },
+  "description": "Local plugins for the ESP32 desktop pet.",
+  "plugins": [
+    {
+      "name": "warfarin-pet-status",
+      "source": "./claude-pet-plugin",
+      "description": "Forward Claude Code lifecycle events to the ESP32 Warfarin desktop pet bridge.",
+      "version": "0.1.0",
+      "author": {
+        "name": "solarise"
+      }
+    }
+  ]
+}
