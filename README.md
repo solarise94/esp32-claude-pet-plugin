@@ -1,4 +1,4 @@
-# Warfarin Claude Pet Plugin
+# esp32 Claude Pet Plugin
 
 Claude Code lifecycle hooks for an ESP32 desktop pet.
 
