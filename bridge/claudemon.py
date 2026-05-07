@@ -17,6 +17,7 @@ import argparse
 import glob
 import json
 import os
+import re
 import signal
 import socket
 import sys
@@ -34,6 +35,13 @@ PUSH_INTERVAL = 0.25
 SLEEP_TIMEOUT = 180.0
 ERROR_HOLD = 5.0
 VALID_STATES = {"idle", "working", "thinking", "sleeping", "error"}
+
+
+def has_word(text: str, words: tuple[str, ...]) -> bool:
+    for word in words:
+        if re.search(rf"(^|[^a-z0-9]){re.escape(word)}([^a-z0-9]|$)", text):
+            return True
+    return False
 
 
 @dataclass
@@ -92,11 +100,16 @@ def coerce_state(packet: dict, current: RuntimeState) -> str:
     now = time.time()
     state = str(packet.get("state") or "").lower()
     event = str(packet.get("event") or "")
+    reason = str(packet.get("reason") or packet.get("notification_type") or "").lower()
+    message = str(packet.get("message") or "").lower()
+    notification_text = f"{reason} {message}"
 
     if state not in VALID_STATES:
         if event == "SessionStart":
             state = "idle"
         elif event == "PreToolUse":
+            state = "working"
+        elif event == "PostToolUse":
             state = "working"
         elif event in ("PostToolUseFailure", "StopFailure"):
             state = "error"
@@ -104,11 +117,20 @@ def coerce_state(packet: dict, current: RuntimeState) -> str:
             state = "idle"
         elif event == "SessionEnd":
             state = "sleeping"
+        elif event == "Notification":
+            if has_word(notification_text, ("idle", "done")):
+                state = "idle"
+            elif has_word(notification_text, ("permission", "approval", "input")):
+                state = "error"
+            else:
+                state = "thinking"
         else:
             state = "thinking"
 
     if state == "error":
         current.error_until = now + ERROR_HOLD
+    elif state in ("idle", "sleeping"):
+        current.error_until = 0.0
     elif current.error_until > now:
         return "error"
 

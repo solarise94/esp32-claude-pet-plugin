@@ -97,8 +97,8 @@ claude plugin marketplace remove esp-pet-tools
 | `SessionStart` | `idle` |
 | `UserPromptSubmit` | `thinking` |
 | `PreToolUse` | `working` |
-| `PostToolUse` | `thinking` |
-| `Notification` | `thinking` or `idle` |
+| `PostToolUse` | `working` |
+| `Notification` | `error` for permission/input/approval, `idle` for idle/done, otherwise `thinking` |
 | `Stop` | `idle` |
 | `SessionEnd` | `sleeping` |
 | `PostToolUseFailure` / `StopFailure` | `error` |

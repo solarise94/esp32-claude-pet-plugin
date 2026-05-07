@@ -77,8 +77,8 @@ claude plugin list
 | `SessionStart` | `idle` |
 | `UserPromptSubmit` | `thinking` |
 | `PreToolUse` | `working` |
-| `PostToolUse` | `thinking` |
-| `Notification` | `thinking` 或 `idle` |
+| `PostToolUse` | `working` |
+| `Notification` | 需要权限/输入时 `error`；idle/done 类通知 `idle`；其他通知 `thinking` |
 | `Stop` | `idle` |
 | `SessionEnd` | `sleeping` |
 | `PostToolUseFailure` / `StopFailure` | `error` |

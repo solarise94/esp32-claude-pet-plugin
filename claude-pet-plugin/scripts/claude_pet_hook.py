@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import socket
 import sys
 import time
@@ -17,6 +18,13 @@ import time
 
 HOST = os.environ.get("CLAUDE_PET_HOST", "127.0.0.1")
 PORT = int(os.environ.get("CLAUDE_PET_PORT", "8765"))
+
+
+def has_word(text: str, words: tuple[str, ...]) -> bool:
+    for word in words:
+        if re.search(rf"(^|[^a-z0-9]){re.escape(word)}([^a-z0-9]|$)", text):
+            return True
+    return False
 
 
 def read_payload() -> dict:
@@ -38,7 +46,7 @@ def map_event_to_state(event: str, payload: dict) -> str:
     if event == "PreToolUse":
         return "working"
     if event == "PostToolUse":
-        return "thinking"
+        return "working"
     if event in ("PostToolUseFailure", "StopFailure"):
         return "error"
     if event == "Stop":
@@ -50,10 +58,10 @@ def map_event_to_state(event: str, payload: dict) -> str:
         reason = str(payload.get("reason") or payload.get("notification_type") or "").lower()
         message = str(payload.get("message") or "").lower()
         text = f"{reason} {message}"
-        if "permission" in text or "approval" in text or "input" in text:
-            return "thinking"
-        if "idle" in text or "done" in text:
+        if has_word(text, ("idle", "done")):
             return "idle"
+        if has_word(text, ("permission", "approval", "input")):
+            return "error"
         return "thinking"
 
     return "thinking"
