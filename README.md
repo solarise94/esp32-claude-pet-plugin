@@ -1,7 +1,7 @@
 # esp32 Claude Pet Plugin
 
 Claude Code lifecycle hooks for an ESP32 desktop pet.
-
+(不懂代码纯vib别骂我 (ó﹏ò｡) )
 This package forwards Claude Code events to a local bridge process. The bridge
 sends `STATUS:*` commands over USB serial to the ESP32 firmware.
 
