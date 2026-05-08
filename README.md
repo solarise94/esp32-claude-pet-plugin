@@ -71,6 +71,14 @@ as `127.0.0.1:8765`, then use the same `CLAUDE_PET_URL`. The bridge listens on
 both UDP `127.0.0.1:8765` and HTTP `http://127.0.0.1:8765/status`; `/health`
 returns `ok`.
 
+On macOS, keep an SSH reverse tunnel alive with LaunchAgent:
+
+```bash
+./install_remote_tunnel_launchagent.sh frp 8765 8765
+```
+
+This forwards remote `127.0.0.1:8765` to local `127.0.0.1:8765`.
+
 ## Logs
 
 macOS:

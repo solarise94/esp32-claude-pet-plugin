@@ -10,6 +10,8 @@
 - `install_portable_claude_pet.sh`：一键安装脚本
 - `install_claudemon_launchagent.sh`：安装 macOS LaunchAgent
 - `uninstall_claudemon_launchagent.sh`：卸载 macOS LaunchAgent
+- `install_remote_tunnel_launchagent.sh`：安装 macOS SSH 反向端口 LaunchAgent
+- `uninstall_remote_tunnel_launchagent.sh`：卸载 macOS SSH 反向端口 LaunchAgent
 - `install_claudemon_systemd_user.sh`：安装 Linux systemd user service
 - `uninstall_claudemon_systemd_user.sh`：卸载 Linux systemd user service
 
@@ -61,6 +63,12 @@ ssh -R 8765:127.0.0.1:8765 user@remote
 
 The bridge listens on both UDP `127.0.0.1:8765` and HTTP
 `http://127.0.0.1:8765/status`.
+
+macOS 可以用 LaunchAgent 常驻 SSH 反向端口：
+
+```bash
+./install_remote_tunnel_launchagent.sh frp 8765 8765
+```
 
 查看桥接日志：
 
