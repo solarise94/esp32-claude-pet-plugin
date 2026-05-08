@@ -44,6 +44,24 @@ sudo usermod -aG dialout "$USER"
 claude
 ```
 
+## Remote SSH / frp
+
+For remote Claude Code sessions, set the hook to send HTTP instead of local UDP:
+
+```bash
+export CLAUDE_PET_URL=http://127.0.0.1:8765/status
+```
+
+Then forward remote TCP `127.0.0.1:8765` back to the local machine running
+`claudemon.py`, for example with SSH reverse forwarding:
+
+```bash
+ssh -R 8765:127.0.0.1:8765 user@remote
+```
+
+The bridge listens on both UDP `127.0.0.1:8765` and HTTP
+`http://127.0.0.1:8765/status`.
+
 查看桥接日志：
 
 ```bash

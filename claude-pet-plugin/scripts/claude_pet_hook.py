@@ -2,8 +2,8 @@
 """Forward one Claude Code hook event to the local pet bridge.
 
 The hook must never block Claude Code. It reads Claude's hook JSON from stdin,
-maps it to a pet state, sends a UDP packet to localhost, and exits 0 even when
-the bridge is not running.
+maps it to a pet state, sends it to the bridge, and exits 0 even when the
+bridge is not running.
 """
 
 from __future__ import annotations
@@ -14,10 +14,12 @@ import re
 import socket
 import sys
 import time
+import urllib.request
 
 
 HOST = os.environ.get("CLAUDE_PET_HOST", "127.0.0.1")
 PORT = int(os.environ.get("CLAUDE_PET_PORT", "8765"))
+URL = os.environ.get("CLAUDE_PET_URL", "")
 
 
 def has_word(text: str, words: tuple[str, ...]) -> bool:
@@ -82,8 +84,20 @@ def main() -> int:
         "reason": payload.get("reason") or payload.get("notification_type"),
     }
 
+    data = json.dumps(packet, ensure_ascii=False).encode("utf-8")
+
     try:
-        data = json.dumps(packet, ensure_ascii=False).encode("utf-8")
+        if URL:
+            request = urllib.request.Request(
+                URL,
+                data=data,
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            with urllib.request.urlopen(request, timeout=0.2):
+                pass
+            return 0
+
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
             sock.settimeout(0.05)
             sock.sendto(data, (HOST, PORT))

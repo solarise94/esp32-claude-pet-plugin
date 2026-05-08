@@ -3,12 +3,12 @@
 set -e
 
 cd "$(dirname "$0")"
-PORT="${1:-/dev/cu.usbmodem11201}"
+PORT="${1:-}"
 LOG="$PWD/bridge/claudemon.log"
 PIDFILE="$PWD/bridge/claudemon.pid"
 
 if [ "$1" = "--daemon" ] || [ "$1" = "-d" ]; then
-  PORT="${2:-/dev/cu.usbmodem11201}"
+  PORT="${2:-}"
   if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
     echo "claudemon already running: PID $(cat "$PIDFILE")"
     exit 0

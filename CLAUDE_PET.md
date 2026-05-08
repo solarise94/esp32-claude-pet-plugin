@@ -52,6 +52,14 @@ STATUS:sleeping
 STATUS:error
 ```
 
+远程 SSH/frp 场景可以让远端 hook 走 HTTP：
+
+```bash
+export CLAUDE_PET_URL=http://127.0.0.1:8765/status
+```
+
+然后通过 SSH 反向转发或 frp 把远端的 `127.0.0.1:8765` 转回本机 `127.0.0.1:8765`。本地 `claudemon.py` 同时监听 UDP 和 HTTP `/status`。
+
 ## 安装 Claude Code 插件
 
 本项目已经提供本地 marketplace。安装后直接运行普通 `claude` 即可自动加载桌宠插件。

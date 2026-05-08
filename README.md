@@ -33,7 +33,8 @@ Plug in the ESP32, then run:
 ./install_portable_claude_pet.sh
 ```
 
-If the serial port is not auto-detected or differs from the default:
+The bridge auto-detects common macOS and Linux USB serial ports. If you want to
+pin a specific port:
 
 ```bash
 ./install_portable_claude_pet.sh /dev/cu.usbmodem11201  # macOS
@@ -45,6 +46,28 @@ Then use Claude Code normally:
 ```bash
 claude
 ```
+
+## Remote SSH / frp
+
+For a remote Claude Code session, keep `claudemon.py` running on the local
+machine connected to the ESP32. Forward remote TCP `127.0.0.1:8765` back to the
+local machine's `127.0.0.1:8765`, then make the remote Claude hook use HTTP.
+
+SSH reverse forwarding example:
+
+```bash
+# Run this from the local machine connected to the ESP32.
+ssh -R 8765:127.0.0.1:8765 user@remote
+
+# On the remote machine before running claude:
+export CLAUDE_PET_URL=http://127.0.0.1:8765/status
+claude
+```
+
+With frp, expose the local bridge's TCP `127.0.0.1:8765` to the remote machine
+as `127.0.0.1:8765`, then use the same `CLAUDE_PET_URL`. The bridge listens on
+both UDP `127.0.0.1:8765` and HTTP `http://127.0.0.1:8765/status`; `/health`
+returns `ok`.
 
 ## Logs
 

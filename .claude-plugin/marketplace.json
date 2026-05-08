@@ -9,7 +9,7 @@
       "name": "warfarin-pet-status",
       "source": "./claude-pet-plugin",
       "description": "Forward Claude Code lifecycle events to the ESP32 Warfarin desktop pet bridge.",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "author": {
         "name": "solarise"
       }
