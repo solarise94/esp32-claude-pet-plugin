@@ -40,6 +40,7 @@ HTTP_HOST = "127.0.0.1"
 HTTP_PORT = 8765
 PUSH_INTERVAL = 0.25
 SLEEP_TIMEOUT = 180.0
+ACTIVE_STALE_TIMEOUT = 3600.0
 ERROR_HOLD = 5.0
 VALID_STATES = {"idle", "working", "thinking", "sleeping", "error"}
 
@@ -238,7 +239,8 @@ def main() -> int:
     parser.add_argument("--http-port", type=int, default=HTTP_PORT, help=f"HTTP 监听端口，默认 {HTTP_PORT}")
     parser.add_argument("--no-http", action="store_true", help="禁用 HTTP /status 监听")
     parser.add_argument("--no-udp", action="store_true", help="禁用 UDP 监听")
-    parser.add_argument("--sleep-timeout", type=float, default=SLEEP_TIMEOUT, help="多久没有事件后进入 sleeping")
+    parser.add_argument("--sleep-timeout", type=float, default=SLEEP_TIMEOUT, help="idle 后多久没有事件进入 sleeping")
+    parser.add_argument("--active-stale-timeout", type=float, default=ACTIVE_STALE_TIMEOUT, help="working/thinking/error 多久没有事件后兜底进入 sleeping")
     args = parser.parse_args()
 
     running = True
@@ -315,7 +317,9 @@ def main() -> int:
             print(f"[{time.strftime('%H:%M:%S')}] {describe_packet(packet, runtime.state)}")
             ser = emit_state(ser, runtime, args.dry_run, args.port)
 
-        if not got_packet and now - runtime.last_event > args.sleep_timeout:
+        idle_stale = runtime.state == "idle" and now - runtime.last_event > args.sleep_timeout
+        active_stale = runtime.state in ("working", "thinking", "error") and now - runtime.last_event > args.active_stale_timeout
+        if not got_packet and (idle_stale or active_stale):
             runtime.state = "sleeping"
 
         if now - runtime.last_push >= PUSH_INTERVAL:
